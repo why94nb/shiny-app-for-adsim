@@ -1,0 +1,124 @@
+---
+title: "Adsim Simulation Report"
+output: pdf_document
+graphics: yes
+---
+## Introduction
+The package develops a beta regression (BR) model to describe the longitudinal progression of the 11 item Alzheimer's Disease (AD) Assessment Scale cognitive sub-scale (ADAS-cog) in AD patients in both natural history and randomized clinical trial settings, utilizing both individual patient and summary level literature data.The model allows for simultaneous fitting of summary and patient level data, allowing for integration of all information available. A further advantage of the BR model is that it constrains values to the range of the original instrument for simulation purposes, in contrast to methodologies that provide appropriate constraints only for conditional expectations.
+
+## Methods
+Patient data from the Coalition Against Major Diseases (CAMD) database (3223 patients), the Alzheimer's Disease Neruroimaging Initiative (ADNI) Study database (186 patients), and summary data from 73 literature references (representing 17,235 patients) were fit to a BR drug-disease-trial model. Treatment effects for currently available acetyl cholinesterase inhibitors,  longitudinal changes in disease severity, dropout rate, placebo effect, and factors influencing these parameters were estimated in the model.Based on predictive checks and external validation, an adequate BR meta-analysis model for ADAS-cog using both summary-level and patient-level data was developed. Baseline ADAS-cog was estimated from baseline MMSE score. Disease progression was dependent on time, APOe4 status, age, and gender. Study drop out was a function of time, baseline age, and baseline MMSE. The use of the BR constrained simulations to the 0-70 range of the ADAS-cog, even when residuals were incorporated. 
+
+## Simulation Setting Up
+In this simulation, we use  `r input$design`. The Drug Effect includes `r input$drug`. There are two groups: Placebo and Treatment with `r input$n.per.arm` patients in each group. The baseline MMSE ranges from `r input$bmmse[1]` to  `r input$bmmse[2]`. 
+Whether dropout: `r input$dropout`. We run `r input$nSim` simulations. 
+
+Design | Drug Effect | Patients per Group | baseline MMSE range | Dropout | No. Sims
+-------|------------| -------------------| --------------------|---------|---------
+`r input$design`| `r input$drug` | `r input$n.per.arm` | (`r input$bmmse`) |`r input$dropout` | `r input$nSim`
+
+Parameters related to trial design and drug effect are listed below(in weeks).
+```{r, echo=FALSE}
+if (input$design == "Parallel Group Design"){
+  info <- data.frame("Duration" = input$duration)
+}
+if (input$design == "Cross-over Design"){
+  info <- data.frame("First Duration" = input$firstduration,"Washout Period" = input$washout,
+                     "Assessment Frequency" = input$frequency)
+}
+if (input$design == "Delayed Start Design"){
+  info <- data.frame("Starting Week" = input$start, "Assessment Period" = input$period, 
+                     "Washout Period" = input$gap)
+}
+ knitr::kable(info,caption = "Trial Design Related Parameters")
+```
+
+```{r,echo=FALSE}
+if (length(input$drug) == 1){
+  if (input$drug == "Symptomatic"){
+    info1 <- data.frame("Emax Value" = input$Emax2, "ET50" = input$et50, "ET50 Washout" = input$et50wash)
+  }
+  if (input$drug == "Disease Modifying"){
+    info1 <- data.frame("Proportional Decrease" = input$eDm2)
+  }
+}
+if (length(input$drug) == 2){
+    info1 <- data.frame("Emax Value" = input$Emax2, "ET50" = input$et50, "ET50 Washout" = input$et50wash, "Proportional Deacrease" = input$eDm2)
+}
+ knitr::kable(info1,caption = "Drug Effect Related Parameters")
+```
+
+## Simulation Results
+### Test Case Results
+In test case, the simulation was run only once to give some illustrative statistics. Nonlinear fitted curves for both placebo group and treatment group are given below. The dashed lines indicates time points of each period.
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.7\textwidth]{plot1.png}
+    \caption{Nonlinear Curve for Both Groups}
+\end{figure}
+
+In addition, summary statistics about baseline information including age, gender, baseline MMSE and ApoE4 are listed below.
+\begin{figure}[h]
+  \centering
+  \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{plot3.png}
+    \caption{Gender Summary}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{plot4.png}
+    \caption{ApoE4 Summary}
+  \end{minipage}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{plot5.png}
+    \caption{Age Summary}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{plot6.png}
+    \caption{MMSE Summary}
+  \end{minipage}
+\end{figure}
+
+### Simulation Results
+The spaghetti plots of two groups are offered below. Each line in light blue indicates one simulation and dark blue triangle points represents average of all the simulations.
+\begin{figure}[h]
+  \centering
+  \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{plot7.png}
+    \caption{Spaghetti Plot for Placebo Group}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{plot8.png}
+    \caption{Spaghetti Plot for Treatment Group}
+  \end{minipage}
+\end{figure}
+
+Also, a t-test is conducted to test whether the difference of Adas-Cog is significant at the endpoint. Here, contrast means the difference of Adas-Cog at the endpoint minus the difference of Adas-Cog at the starting point.Since in delayed start design, we have two periods of treatment assessment, two t-tests are conducted. Summary of each simulation contrast as well as 95% confidence interval is given by figure 7 and 9. Summary of p-values is given by figure 8 and 10.
+\begin{figure}[h]
+  \centering
+  \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{plot9.png}
+    \caption{Contrast Summary}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{plot10.png}
+    \caption{P-value Summary}
+  \end{minipage}
+\end{figure}\begin{figure}[h]
+  \centering
+  \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{plot11.png}
+    \caption{Contrast Summary}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{plot12.png}
+    \caption{P-value Summary}
+  \end{minipage}
+\end{figure}
