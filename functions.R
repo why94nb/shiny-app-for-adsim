@@ -9,21 +9,7 @@ require(nlme)
 require(contrast)
 require(shiny)
 require(shinydashboard)
-require(webshot)
 
-screenshot_plotly = function(x, file = 'webshot.png', ...) { 
-  file2 = normalizePath(file, mustWork = FALSE) 
-  d = tempfile() 
-  dir.create(d) 
-  owd = setwd(d) 
-  on.exit({ 
-    setwd(owd) 
-    unlink(d, recursive = TRUE) 
-  }, add = TRUE) 
-  htmlwidgets::saveWidget(plotly::as.widget(x), 'index.html', FALSE) 
-  file.copy(webshot::webshot('index.html', ...), file2) 
-  file 
-} 
 
 data(posterior)
 postMed <- apply(posterior, 2, median)
@@ -339,8 +325,4 @@ delay_sim <- function(nSim,n.per.arm, lbMmse.use=14, ubMmse.use=26,emax1 = 0,ema
 }
 
 
-
-png('nihao.png')
-a$"webshot.png"
-dev.off()
 

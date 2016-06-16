@@ -8,7 +8,7 @@ dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("About",tabName = "about",icon = icon("th")),
-      menuItem("Simulation Setting", tabName = "setup", icon = icon("line-chart")),
+      menuItem("Simulation Setting Up", tabName = "setup", icon = icon("line-chart")),
       menuItem("Illustrative Statistics", tabName = "summary", icon = icon("pie-chart")),
       menuItem("Simulation Summary",tabName = "simsum", icon = icon("bar-chart")),
       menuItem("Patient Table", tabName = "result", icon = icon("table")),
@@ -17,6 +17,9 @@ dashboardPage(
     )
   ),
   dashboardBody(
+    tags$head(
+      tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
+    ),
     tabItems(
       tabItem(tabName = "about",
               tabsetPanel(
@@ -29,51 +32,54 @@ dashboardPage(
                                p("The model developed utilized a Beta Regression (BR) drug-disease-trial model (ref). The model allowed for simultaneous fitting of summary and patient level data, allowing for integration of all information available. A further advantage of the BR model was that it constrained values to the range of the original instrument for simulation purposes, in contrast to methodologies that provide appropriate constraints only for conditional expectations. Treatment effects for currently available acetyl cholinesterase inhibitors, longitudinal changes in disease severity, dropout rate, placebo effect, and factors influencing these parameters were estimated in the model."),
                                p("Based on predictive checks and external validation, an adequate BR meta-analysis model for ADAS-cog using both summary-level and patient-level data was developed. Baseline ADAS-cog was estimated from baseline MMSE score. Disease progression was dependent on time, APOe4 status, age, and gender. Study drop out was a function of time, baseline age, and baseline MMSE. The use of the BR constrained simulations to the 0-70 range of the ADAS-cog, even when residuals were incorporated. The model underwent formal evaluation for suitability of use by both the FDA and EMA, and was deemed suitable for use by both agencies.
                                  ")),
-                           box(width = 6,title = "Development of a User Interface",
+                           box(width = 6,title = "Development of a User Interface",height = 170,
                                status = "primary", solidHeader = T,
                                p("User feedback to the Modeling and Simulation Workgroup of CAMD suggested that a user interface may make the package more accessible by those less familiar with the use of statistical software such as R. Feedback also suggested that it may be useful to automate production of some of the plots and figures that normally would be developed as part of a trial simulation exercise. ")
                                ),
-                           box(width = 6,title = "Resources",
+                           box(width = 6,title = "Resources",height = 170,
                                status = "primary", solidHeader = T,
-                               p("Github (includes Code for the application): TBD"),
-                               p("Documentation for the adsim package: https://bitbucket.org/metrumrg/alzheimers-disease-progression-model-adascog/wiki/Home "),
-                               p("Link to Original Article (Journal of Pharmacokinetics and Pharmacodynamics): http://www.ncbi.nlm.nih.gov/pubmed/22821139 
-                                 ")
+                               strong("Github(Code for both shiny app and 'adsim' package):"),tags$a(href="https://github.com/why94nb/", "https://github.com/why94nb/"),
+                               br(),
+                               strong("Documentation for the adsim package:"),tags$a(href="//bitbucket.org/metrumrg/alzheimers-disease-progression-model-adascog/wiki/Home ","//bitbucket.org/metrumrg/alzheimers-disease-progression-model-adascog/wiki/Home"),
+                               br(),
+                               strong("Link to Original Article (Journal of Pharmacokinetics and Pharmacodynamics):"),tags$a(href=" http://www.ncbi.nlm.nih.gov/pubmed/22821139","http://www.ncbi.nlm.nih.gov/pubmed/22821139")
                                )
                                )
                 ),
                 tabPanel("User Guide",
-                         box(width = 12, status = "primary", solidHeader = T,
-                             title = "Background",
-                             p("This section describes the basic use of the adsimR package. adsimR offers users the option to perform longitudinal clincial trial simulations of the ADAS-Cog-11 with different types of trial designs and drug effects being simulated. It also generates a short report defining the parameters used, summarizing outcomes of the simulations in tables and figures, and includes source code."),
-                             p("There are 5 tabs located on the left of the screen. The user is intended to use the tabs in order to complete the simulation activities. An explanation of each tab is below. Please notice that all the plots and tables from the app are downloadable.")
-                         ),
+                         
                          fluidRow(
+                           box(width = 12, status = "primary", solidHeader = T,
+                               title = "Background",
+                               p("This section describes the basic use of the adsimR package. adsimR offers users the option to perform longitudinal clincial trial simulations of the ADAS-Cog-11 with different types of trial designs and drug effects being simulated. It also generates a short report defining the parameters used, summarizing outcomes of the simulations in tables and figures, and includes source code."),
+                               p("There are 5 tabs located on the left of the screen. The user is intended to use the tabs in order to complete the simulation activities. An explanation of each tab is below. Please notice that all the plots and tables from the app are downloadable.")
+                           ),
                            column(width = 7,
                          box(width = NULL, status = "primary", solidHeader = T,
                              title = "Simulation Setting Up",
                              p("This screen allows the user to define all the parameters required for the simulation."),
-                             p("Test vs Run: If you plan to run a large number of trial simulations, (eg 1000 ) it is highly recommended to test your settings first by clickingthe  'Test' button, large simulations will take time. The user can test and adjust settings, according to the outputs listed on the right side(fitted curves for each group and statistical test of contrast at the end point) as well as on session Illustrative Statistics and Patient Table."),
-                             p("Set Seed: The user can set seed before running simulation for reproducibility."),
-                             p("Trial Design: Three types of trial design are available: Cross-over design, parallel group design and delayed start design. If cross-over design is chosen, then the user also need to specify first period duration, washout period and assessment frequency(eg, if it's set to be 3, then Adas-Cog will be assessed every 3 weeks. Notice: 2*FirstPeriodDuration + WashoutPeriod should be divisible by assessment frequency because of computational issue). If parallel group design is chosen, then the user should specify simulation duration. If delayed start design is chosen, then the user need to specify when the first assessment begins(starting point), how long the assessment lasts(assessment period) as well as washout period."),
-                             p("Drug Effect: Two types of drug effects are available: Symptomatic effect and disease modifying effect. The user should choose at least one of the two effects. Parameters related to symptomatic effect include emax value(the maximum possible effect), ET 50(Time to 50 % of maximum drug effect) and ET50 washout(). Parameters related to disease modifying effect is proportional decrease. "),
-                             p("Patients per Group: The user can specify how many patients in each group(placebo and treatment)."),
-                             p("Baseline MMSE range: : Mini-Mental Status Examination; 30-point questionnaire used to measure the severity of cognitive impairment, commonly used in AD trials."),
-                             p("Whether dropout:Time when a patient withdraw from the trial (missing data mechanism: MAR). The user can choose whether to take dropout of patients into account."),
-                             p("Number of Simulations: The user can specify number of simulations to run.")
+                             strong("Test vs Run: "),p("If you plan to run a large number of trial simulations, (eg 1000 ) it is highly recommended to test your settings first by clickingthe  'Test' button, large simulations will take time. The user can test and adjust settings, according to the outputs listed on the right side(fitted curves for each group and statistical test of contrast at the end point) as well as on session Illustrative Statistics and Patient Table."),
+                             strong("Set Seed:"),p(" The user can set seed before running simulation for reproducibility."),
+                             strong("Trial Design: "),p("Three types of trial design are available: Cross-over design, parallel group design and delayed start design. If cross-over design is chosen, then the user also need to specify first period duration, washout period and assessment frequency(eg, if it's set to be 3, then Adas-Cog will be assessed every 3 weeks. Notice: 2*FirstPeriodDuration + WashoutPeriod should be divisible by assessment frequency because of computational issue). If parallel group design is chosen, then the user should specify simulation duration. If delayed start design is chosen, then the user need to specify when the first assessment begins(starting point), how long the assessment lasts(assessment period) as well as washout period."),
+                             strong("Drug Effect: "),p("Two types of drug effects are available: Symptomatic effect and disease modifying effect. The user should choose at least one of the two effects. Parameters related to symptomatic effect include emax value(the maximum possible effect), ET 50(Time to 50 % of maximum drug effect) and ET50 washout(). Parameters related to disease modifying effect is proportional decrease. "),
+                             strong("Patients per Group: "),p("The user can specify how many patients in each group(placebo and treatment)."),
+                             strong("Baseline MMSE range:"),p(" Mini-Mental Status Examination; 30-point questionnaire used to measure the severity of cognitive impairment, commonly used in AD trials."),
+                             strong("Whether dropout:"),p("Time when a patient withdraw from the trial (missing data mechanism: MAR). The user can choose whether to take dropout of patients into account."),
+                             strong("Number of Simulations: "),p("The user can specify number of simulations to run.")
                          )
                          ),
                          column(width = 5,
                          box(width = NULL, status = "primary", solidHeader = T,
-                             title = "Simulation Setting Up",
+                             title = "Illustrative Statistics",
                              p("In this session, spaghetti plots as well as summary baseline information about patients
-                               are offered. These plots will only be shown if user press test button.")
+                               are offered."),
+                             strong("These plots will only be shown if user presses test button.")
                          ),
                          box(width = NULL, status = "primary", solidHeader = T,
-                             title = "Simulation summary",
-                             p("Spaghetti plot is available, and contrast information of each simulation with 95% CI
-                               is plotted, summary of statistical test(p-values) is also given. Again these plots will
-                               only be shown if user press run button.")
+                             title = "Simulation Summary",
+                             p("Spaghetti plot is available, and contrast information(Difference between placebo and treatment group at the end time point) of each simulation with 95% CI
+                               is plotted, summary of statistical test(Whether contrast is significant) is also given."),
+                             strong("Again these plots will only be shown if user presses run button.")
                          ),
                          box(width = NULL, status = "primary", solidHeader = T,
                              title = "Patient Table",
@@ -94,7 +100,7 @@ dashboardPage(
          fluidRow(
             column(width=3,
                 box(width = NULL,status = "primary", solidHeader = T,
-                    title="Setting up", 
+                    title="Setting Up", 
                     numericInput("seed","Please Set Seed:",value = 1234),
                     radioButtons("design", "Please Choose Trial Design", 
                                  c("Cross-over Design","Parallel Group Design",
@@ -169,16 +175,16 @@ dashboardPage(
                 box(width = 8, title = "Spaghetti Plot",collapsible = T,
                     status = "primary", solidHeader = T,
                     plotlyOutput("summary2")),
-                box(width = 4, title = "Gender Info",
+                box(width = 4, title = "Gender Information",
                     status = "primary", solidHeader = T,
                     plotlyOutput("summary1")),
                 box(width = 4, title = "ApoE Proportion",
                     status = "primary", solidHeader = T,
                     plotlyOutput("summary3")),
-                box(width = 4, title = "Age Info",
+                box(width = 4, title = "Age Information",
                     status = "primary", solidHeader = T,
                     plotlyOutput("summary4")),
-                box(width = 4, title = "Baseline Mmse Info",
+                box(width = 4, title = "Baseline MMSE Information",
                     status = "primary", solidHeader = T,
                     plotlyOutput("summary5"))
                                 )
@@ -186,7 +192,7 @@ dashboardPage(
  
       tabItem(tabName = "result",
           tabsetPanel(
-            tabPanel("Basic Info",
+            tabPanel("Baseline Information",
             fluidRow(
               box(width = 12,DT::dataTableOutput("table2"),
                   downloadButton("download1")))
@@ -204,7 +210,7 @@ dashboardPage(
                 box(width = 6, title = "Treatment",collapsible = T,
                     status = "primary", solidHeader = T,
                     plotlyOutput("simsum4")),
-                box(width = 7, title = "Contrast Info",collapsible = T,
+                box(width = 7, title = "Contrast Information",collapsible = T,
                     status = "primary", solidHeader = T,
                     plotlyOutput("simsum2")),
                 box(width = 5, title = "P-values Summary",collapsible = T,
