@@ -12,6 +12,7 @@ dashboardPage(
       menuItem("Illustrative Statistics", tabName = "summary", icon = icon("pie-chart")),
       menuItem("Simulation Summary",tabName = "simsum", icon = icon("bar-chart")),
       menuItem("Patient Table", tabName = "result", icon = icon("table")),
+      downloadButton("downloadfulltable","Download Full Table"),
       radioButtons('format', 'Document format', c('PDF')),
       downloadButton("downloadreport","Download Report")
     )
@@ -120,6 +121,13 @@ dashboardPage(
                 ),
         
               column(width=3, 
+                box(width = NULL,status = "primary", solidHeader = T,collapsible = T,
+                    p("The figure on the right hand side shows the fitted curve using 
+                      nonlinear methods such as 'loess' or 'gam'.
+                    A statistical test is also conducted to test whether the
+                      difference of Adas-Cog scores for the two groups at the end of
+                       the trial is significant or not."),
+                    strong("These figure and table will only be shown if user click test button.")),
                 box(width = NULL,status = "primary", solidHeader = T,
                  conditionalPanel(
                    condition = "input.design == 'Cross-over Design'",
@@ -147,7 +155,7 @@ dashboardPage(
                 
                 conditionalPanel(
                   condition = "input.drug.includes('Symptomatic')",
-                    numericInput("Emax2","Emax Value for Treatment Group:", value = -0.1),
+                    numericInput("Emax2","Emax Value for Treatment Group:", value = -2),
                     numericInput("et50","ET50:", value = 1),
                     numericInput("et50wash","ET50 Washout:", value = 1)
                 ),
@@ -172,7 +180,7 @@ dashboardPage(
        
       tabItem(tabName = "summary",
               fluidRow(
-                box(width = 8, title = "Spaghetti Plot",collapsible = T,
+                box(width = 8, title = "Patient-level Spaghetti Plot",collapsible = T,
                     status = "primary", solidHeader = T,
                     plotlyOutput("summary2")),
                 box(width = 4, title = "Gender Information",
@@ -204,21 +212,25 @@ dashboardPage(
       ),
       tabItem(tabName = "simsum",
               fluidRow(
-                box(width = 6, title = "Placebo",collapsible = T,
+                box(width = 6, title = "Trial-level Spaghetti Plot",collapsible = T,
                     status = "primary", solidHeader = T,
                     plotlyOutput("simsum1")),
-                box(width = 6, title = "Treatment",collapsible = T,
+                box(width = 6, title = "Trial-level Spaghetti Plot",collapsible = T,
                     status = "primary", solidHeader = T,
                     plotlyOutput("simsum4")),
                 box(width = 7, title = "Contrast Information",collapsible = T,
                     status = "primary", solidHeader = T,
+                    p("For each simulation, the average difference of AdasCog score of two groups
+                       as well as 95% confidence interval are calculated."),
                     plotlyOutput("simsum2")),
-                box(width = 5, title = "P-values Summary",collapsible = T,
+                box(width = 5, title = "P-value Summary",collapsible = T,
                     status = "primary", solidHeader = T,
+                    p("For each simulation,a statistical test is also conducted to test whether the difference of Adas-Cog scores for the two groups at the end of the trial is significant or not.
+                       Proportion of P-values of the tests are summarized as the figure below."),
                     plotlyOutput("simsum3")),
                 conditionalPanel(
                   condition = "input.design == 'Delayed Start Design'",
-                  box(width = 7, title = "Contrast Info",collapsible = T,
+                  box(width = 7, title = "Contrast Information",collapsible = T,
                       status = "primary", solidHeader = T,
                       plotlyOutput("simsum5")),
                   box(width = 5, title = "P-value Summary",collapsible = T,

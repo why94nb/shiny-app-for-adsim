@@ -26,8 +26,8 @@ shinyServer(function(input, output) {
                                  et50wash = isolate(input$et50wash), edm = isolate(input$eDm2),
                                  firstduration = input$firstduration,washout = input$washout,
                                  dropout = isolate(input$dropout),frequency=isolate(input$frequency))
-              pla <- xover$stat[xover$stat$DrugDose == "Placebo",]
-              trt <- xover$stat[xover$stat$DrugDose == "Treatment",]
+              pla <- xover$stat[xover$stat$DrugDose == "Placebo-Treatment",]
+              trt <- xover$stat[xover$stat$DrugDose == "Treatment-Placebo",]
             })
             output$plot1 <- renderPlotly( xover$plot)
             plotly_IMAGE(xover$plot,out_file = "plot1.png")
@@ -67,7 +67,7 @@ shinyServer(function(input, output) {
             r2 <- c(length(which(pla$Gender == 1)),length(which(pla$Gender == 0)))
             r3 <- c(length(which(trt$Gender == 1)),length(which(trt$Gender == 0)))
             r <- rbind(r1,r2,r3)
-            r4 <- c("Total","Placebo","Treatment")
+            r4 <- c("Total","Placebo-Treatment","Treatment-Placebo")
             p1 <- plot_ly( x=r4, y=r[,1], name="Female",type = "bar",opacity = 0.6) %>%
               add_trace(x=r4,y=r[,2],name="Male",type="bar",opacity = 0.6) %>%
               layout(xaxis=list(title = ""),yaxis=list(title="No. of Obs"))
@@ -79,8 +79,8 @@ shinyServer(function(input, output) {
                                  length(which(pla$ApoE == 2))))
             p2 <- plot_ly(ds, labels = labels, values = values, type = "pie",
                     domain = list(x = c(0, 0.4), y = c(0.4, 1)),
-                    name = "Placebo", showlegend = T,marker=list(colors =
-                                                                   brewer.pal(3, "Set2")),opacity=0.8
+                    name = "Placebo-Treatment", showlegend = T,marker=list(colors =
+                    brewer.pal(3, "Set2")),opacity=0.8
             ) %>%
               add_trace(data = data.frame(labels = c("0","1","2"),
                                           values = c(length(which(xover$stat$ApoE == 0)),
@@ -101,19 +101,19 @@ shinyServer(function(input, output) {
                             length(which(trt$ApoE == 1)),
                             length(which(trt$ApoE == 2))),type = "pie",
                         domain = list(x = c(0.6, 1), y = c(0.4, 1)),
-                        name = "Treatment", showlegend = F,opacity=0.8)
+                        name = "Treatment-Placebo", showlegend = F,opacity=0.8)
             plotly_IMAGE(p2,out_file = "plot4.png")
             output$summary3 <- renderPlotly(p2)
 
-            p3 <- plot_ly(y = trt$Age, type = "box",name = "Treatment") %>%
-              add_trace(y = pla$Age, type = "box",name = "Placebo") %>%
+            p3 <- plot_ly(y = trt$Age, type = "box",name = "Treatment-Placebo") %>%
+              add_trace(y = pla$Age, type = "box",name = "Placebo-Treatment") %>%
               add_trace(y = xover$stat$Age,type = "box", name = "Total") %>%
               layout(xaxis=list(title = ""),yaxis=list(title="Age"))
             plotly_IMAGE(p3,out_file = "plot5.png")
             output$summary4 <- renderPlotly(p3)
 
-            p4 <- plot_ly(y = trt$Bmmse, type = "box",name = "Treatment") %>%
-              add_trace(y = pla$Bmmse, type = "box",name = "Placebo") %>%
+            p4 <- plot_ly(y = trt$Bmmse, type = "box",name = "Treatment-Placebo") %>%
+              add_trace(y = pla$Bmmse, type = "box",name = "Placebo-Treatment") %>%
               add_trace(y = xover$stat$Bmmse,type = "box", name = "Total") %>%
               layout(xaxis=list(title = ""),yaxis=list(title="Baseline MMSE"))
             plotly_IMAGE(p4,out_file = "plot6.png")
@@ -228,8 +228,8 @@ shinyServer(function(input, output) {
                                et50wash = isolate(input$et50wash), edm = rep(isolate(input$eDm2),2),
                                period = input$period, start = input$start,
                                dropout = isolate(input$dropout))
-            pla <- delay$stat[delay$stat$DrugDose == "Placebo",]
-            trt <- delay$stat[delay$stat$DrugDose == "Treatment",]
+            pla <- delay$stat[delay$stat$DrugDose == "Placebo-Treatment",]
+            trt <- delay$stat[delay$stat$DrugDose == "Treatment-Treatment",]
             })
             output$plot1 <- renderPlotly(delay$plot)
             plotly_IMAGE(delay$plot,out_file = "plot1.png")
@@ -266,7 +266,7 @@ shinyServer(function(input, output) {
             r2 <- c(length(which(pla$Gender == 1)),length(which(pla$Gender == 0)))
             r3 <- c(length(which(trt$Gender == 1)),length(which(trt$Gender == 0)))
             r <- rbind(r1,r2,r3)
-            r4 <- c("Total","Placebo","Treatment")
+            r4 <- c("Total","Placebo-Treatment","Treatment-Treatment")
             p1 <- plot_ly( x=r4, y=r[,1], name="Female",type = "bar",opacity = 0.6) %>%
               add_trace(x=r4,y=r[,2],name="Male",type="bar",opacity = 0.6) %>%
               layout(xaxis=list(title = ""),yaxis=list(title="No. of Obs"))
@@ -278,8 +278,8 @@ shinyServer(function(input, output) {
                                  length(which(pla$ApoE == 2))))
             p2 <- plot_ly(ds, labels = labels, values = values, type = "pie",
                     domain = list(x = c(0, 0.4), y = c(0.4, 1)),
-                    name = "Placebo", showlegend = T,marker=list(colors =
-                                                                   brewer.pal(3, "Set2")),opacity=0.8
+                    name = "Placebo-Treatment", showlegend = T,marker=list(colors =
+                    brewer.pal(3, "Set2")),opacity=0.8
             ) %>%
               add_trace(data = data.frame(labels = c("0","1","2"),
                                           values = c(length(which(delay$stat$ApoE == 0)),
@@ -300,19 +300,19 @@ shinyServer(function(input, output) {
                             length(which(trt$ApoE == 1)),
                             length(which(trt$ApoE == 2))),type = "pie",
                         domain = list(x = c(0.6, 1), y = c(0.4, 1)),
-                        name = "Treatment", showlegend = F,opacity=0.8)
+                        name = "Treatment-Treatment", showlegend = F,opacity=0.8)
             plotly_IMAGE(p2,out_file = "plot4.png")
             output$summary3 <- renderPlotly(p2)
 
-            p3 <- plot_ly(y = trt$Age, type = "box",name = "Treatment") %>%
-              add_trace(y = pla$Age, type = "box",name = "Placebo") %>%
+            p3 <- plot_ly(y = trt$Age, type = "box",name = "Treatment-Treatment") %>%
+              add_trace(y = pla$Age, type = "box",name = "Placebo-Treatment") %>%
               add_trace(y = delay$stat$Age,type = "box", name = "Total") %>%
               layout(xaxis=list(title = ""),yaxis=list(title="Age"))
             plotly_IMAGE(p3,out_file = "plot5.png")
             output$summary4 <- renderPlotly(p3)
 
-            p4 <- plot_ly(y = trt$Bmmse, type = "box",name = "Treatment") %>%
-              add_trace(y = pla$Bmmse, type = "box",name = "Placebo") %>%
+            p4 <- plot_ly(y = trt$Bmmse, type = "box",name = "Treatment-Treatment") %>%
+              add_trace(y = pla$Bmmse, type = "box",name = "Placebo-Treatment") %>%
               add_trace(y = delay$stat$Bmmse,type = "box", name = "Total") %>%
               layout(xaxis=list(title = ""),yaxis=list(title="Baseline MMSE"))
             plotly_IMAGE(p4,out_file = "plot6.png")
@@ -343,7 +343,14 @@ shinyServer(function(input, output) {
                          firstduration = isolate(input$firstduration),washout = isolate(input$washout),
                          dropout = isolate(input$dropout),frequency=isolate(input$frequency))
       })
-
+      output$downloadfulltable <- downloadHandler(
+        filename = function(){
+          paste('fulltable-',Sys.Date(),'.csv',sep='')
+        },
+        content = function(con){
+          write.csv(xover$data,con)
+        }
+      )
       output$simsum1 <- renderPlotly({xover$plot1})
       plotly_IMAGE(xover$plot1,out_file = "plot7.png")
       output$simsum4 <- renderPlotly({xover$plot2})
@@ -353,7 +360,7 @@ shinyServer(function(input, output) {
                    F, arrayminus = xover$res[,1] - xover$res[,3],
                   array = xover$res[,4] - xover$res[,1]), mode = "markers") %>%
         layout(xaxis = list(title = "Simulations"),
-               yaxis = list(title = "Contrast"))
+               yaxis = list(title = "Contrast of AdasCog Scores"))
       plotly_IMAGE(p1,out_file = "plot9.png")
       output$simsum2 <- renderPlotly(p1)
 
@@ -373,7 +380,14 @@ shinyServer(function(input, output) {
                                  et50wash = isolate(input$et50wash), edm = c(0,isolate(input$eDm2)),
                                  duration = isolate(input$duration), dropout = isolate(input$dropout))
       })
-
+      output$downloadfulltable <- downloadHandler(
+        filename = function(){
+          paste('fulltable-',Sys.Date(),'.csv',sep='')
+        },
+        content = function(con){
+          write.csv(parallel$data,con)
+        }
+      )
       output$simsum1 <- renderPlotly({parallel$plot1})
       plotly_IMAGE(parallel$plot1,out_file = "plot7.png")
       output$simsum4 <- renderPlotly({parallel$plot2})
@@ -382,7 +396,7 @@ shinyServer(function(input, output) {
       p1 <- plot_ly(x = 1:input$nSim,y = parallel$res[,1], error_y = list(symmetric = F, arrayminus = parallel$res[,1] - parallel$res[,3],
                   array = parallel$res[,4] - parallel$res[,1]), mode = "markers") %>%
         layout(xaxis = list(title = "Simulations"),
-               yaxis = list(title = "Contrast"))
+               yaxis = list(title = "Contrast of AdasCog Scores"))
       plotly_IMAGE(p1,out_file = "plot9.png")
       output$simsum2 <- renderPlotly(p1)
 
@@ -403,7 +417,14 @@ shinyServer(function(input, output) {
                            period = isolate(input$period), start = isolate(input$start),
                            dropout = isolate(input$dropout))
       })
-
+      output$downloadfulltable <- downloadHandler(
+        filename = function(){
+          paste('fulltable-',Sys.Date(),'.csv',sep='')
+        },
+        content = function(con){
+          write.csv(delay$data,con)
+        }
+      )
       output$simsum1 <- renderPlotly({delay$plot1})
       plotly_IMAGE(delay$plot1,out_file = "plot7.png")
       output$simsum4 <- renderPlotly({delay$plot2})
@@ -412,7 +433,7 @@ shinyServer(function(input, output) {
       p1 <- plot_ly(x = 1:input$nSim, y = delay$res[,1], error_y = list(symmetric = F, arrayminus = delay$res[,1] - delay$res[,3],
                                                                   array = delay$res[,4] - delay$res[,1]), mode = "markers") %>%
         layout(xaxis = list(title = "Simulations"),
-               yaxis = list(title = "Contrast"))
+               yaxis = list(title = "Contrast of AdasCog Scores"))
       plotly_IMAGE(p1,out_file = "plot9.png")
       output$simsum2 <- renderPlotly(p1)
 

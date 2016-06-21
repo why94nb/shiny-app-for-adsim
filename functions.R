@@ -56,7 +56,7 @@ parallel_one <- function(n.per.arm, lbMmse.use=14, ubMmse.use=26,emax1 = 0,emax2
 
   plot <- pp + theme(legend.position="none") + 
     geom_smooth(aes(colour=DrugDose,fill = DrugDose, se=FALSE)) + 
-    facet_wrap(~ DrugDose, ncol=2) + xlab("Week") + ylab("AdasCog")
+    facet_wrap(~ DrugDose, ncol=2) + xlab("Time(week)") + ylab("AdasCog Score")
   
   plot1 <- ggplot(xOverDat,aes(x=Time, y = AdasCog, group = Patient)) + 
     geom_line(color='light blue') + geom_point(shape=18,color='light blue') + 
@@ -64,7 +64,8 @@ parallel_one <- function(n.per.arm, lbMmse.use=14, ubMmse.use=26,emax1 = 0,emax2
                  shape = 17, size = 3,color = "dark blue") + facet_wrap(~ DrugDose) + 
     theme(panel.background = element_rect(fill = "white"),
           panel.grid.major = element_line(colour = "white"),
-          panel.grid.minor = element_line(colour = "white"),legend.position="none")
+          panel.grid.minor = element_line(colour = "white"),legend.position="none") + 
+    xlab("Time(week)") + ylab("AdasCog Score")
   
   baseTable$Arm <- baseTable$dropT <- NULL
   list("test" = epresult, "stat" = baseTable, "plot" = ggplotly(plot), 
@@ -77,7 +78,7 @@ xover_one <- function(n.per.arm, lbMmse.use=14, ubMmse.use=26,emax1 = -0.1,
                            frequency = 3,washout = 3, dropout = "Yes",drug = "Both"){
   
   n.enrolled <- n.per.arm * 2
-  treatments <- c("Treatment","Placebo")
+  treatments <- c("Treatment-Placebo","Placebo-Treatment")
   if (drug == "Both"){
     emax = emax1
   }
@@ -124,7 +125,7 @@ moderate'))
 
   plot <- pp + theme(legend.position="none") + 
     geom_smooth(aes(colour=DrugDose,fill = DrugDose, se=FALSE))+
-    facet_wrap(~ DrugDose, ncol=2) + xlab("Week") + ylab("AdasCog") + 
+    facet_wrap(~ DrugDose, ncol=2) + xlab("Time(week)") + ylab("AdasCog") + 
     geom_vline(xintercept = c(firstduration, firstduration + washout),
                linetype = "longdash")
   
@@ -134,7 +135,9 @@ moderate'))
          shape = 17, size = 3,color = "dark blue") + facet_wrap(~ DrugDose) + 
      theme(panel.background = element_rect(fill = "white"),
         panel.grid.major = element_line(colour = "white"),
-        panel.grid.minor = element_line(colour = "white"),legend.position="none")
+        panel.grid.minor = element_line(colour = "white"),legend.position="none") + 
+    xlab("Time(week)") + ylab("AdasCog Score") + geom_vline(xintercept = c(firstduration, firstduration + washout),
+                                                            linetype = "longdash")
   
   baseTable$Arm <- baseTable$dropT <- NULL
   list("test" = epresult, "stat" = baseTable, "plot" = ggplotly(plot),
@@ -145,7 +148,7 @@ delay_one <- function(n.per.arm, lbMmse.use=14, ubMmse.use=26,emax1 = 0,emax2 = 
                          et50 = 1, et50wash = 1, edm = c(0.4,0.4),start = 52,
                          period = 91,dropout = "Yes",drug = "Both"){
   n.enrolled <- n.per.arm * 2
-  treatments <- c("Treatment","Placebo")
+  treatments <- c("Treatment-Treatment","Placebo-Treatment")
   t.global <- c(0,start/2,start,period - start/2,period)
   if (drug == "Both"){
     emax = c(emax1,emax2)
@@ -186,7 +189,7 @@ delay_one <- function(n.per.arm, lbMmse.use=14, ubMmse.use=26,emax1 = 0,emax2 = 
  
   plot <- pp + theme(legend.position="none") + 
     geom_smooth(aes(colour=DrugDose,fill = DrugDose, se=FALSE)) + 
-    facet_wrap(~ DrugDose, ncol=2) + xlab("Week") + ylab("AdasCog") +
+    facet_wrap(~ DrugDose, ncol=2) + xlab("Time(week)") + ylab("AdasCog") +
     geom_vline(xintercept = start,linetype = "longdash")
   
   plot1 <- ggplot(xOverDat,aes(x=Time, y = AdasCog, group = Patient)) + 
@@ -195,7 +198,8 @@ delay_one <- function(n.per.arm, lbMmse.use=14, ubMmse.use=26,emax1 = 0,emax2 = 
                  shape = 17, size = 3,color = "dark blue") + facet_wrap(~ DrugDose) + 
     theme(panel.background = element_rect(fill = "white"),
           panel.grid.major = element_line(colour = "white"),
-          panel.grid.minor = element_line(colour = "white"),legend.position="none")
+          panel.grid.minor = element_line(colour = "white"),legend.position="none") + 
+    xlab("Time(week)") + ylab("AdasCog Score") + geom_vline(xintercept = start,linetype = "longdash")
   
   baseTable$Arm <- baseTable$dropT <- NULL
   list("test" = epresult, "stat" = baseTable, "plot" = ggplotly(plot), 
@@ -222,8 +226,8 @@ xover_sim <- function(nSim,n.per.arm, lbMmse.use=14, ubMmse.use=26,emax1 = -0.1,
   mns <- lapply(1:length(datList),function(i){with(datList[[i]], 
                 tapply(AdasCog, list(DrugDose, Time), mean))})
   mns <- t(do.call('rbind',mns))
-  pla <- mns[,colnames(mns) == 'Placebo']
-  trt <- mns[,colnames(mns) == 'Treatment']
+  pla <- mns[,colnames(mns) == 'Placebo-Treatment']
+  trt <- mns[,colnames(mns) == 'Treatment-Placebo']
   colnames(pla) <- colnames(trt) <- NULL
   spla <- stack(as.data.frame(pla))
   strt <- stack(as.data.frame(trt))
@@ -234,15 +238,25 @@ xover_sim <- function(nSim,n.per.arm, lbMmse.use=14, ubMmse.use=26,emax1 = -0.1,
                  shape = 17, size = 3,color = "dark blue") + 
     theme(panel.background = element_rect(fill = "white"),
           panel.grid.major = element_line(colour = "white"),
-          panel.grid.minor = element_line(colour = "white"),legend.position="none")
+          panel.grid.minor = element_line(colour = "white"),legend.position="none")+
+    xlab("Time(week)") + ylab("AdasCog Score") + geom_vline(xintercept = c(firstduration, firstduration + washout),
+                                                            linetype = "longdash") +
+    labs(title="Placebo-Treatment")
   plot2 <- ggplot(strt,aes(x=x, y = values, group = ind)) + 
     geom_line(color='light blue') + geom_point(shape=18,color='light blue') + 
     stat_summary(aes(group=1),geom = "point", fun.y = mean,
                  shape = 17, size = 3,color = "dark blue") + 
     theme(panel.background = element_rect(fill = "white"),
           panel.grid.major = element_line(colour = "white"),
-          panel.grid.minor = element_line(colour = "white"),legend.position="none")
-  list("data" = datList, "res" = res,"plot1" = ggplotly(plot1),"plot2" = ggplotly(plot2))
+          panel.grid.minor = element_line(colour = "white"),legend.position="none")+
+    xlab("Time(week)") + ylab("AdasCog Score") + geom_vline(xintercept = c(firstduration, firstduration + washout),
+                                                            linetype = "longdash")+
+    labs(title="Treatment-Placebo")
+  for (i in 1:length(datList)){
+    datList[[i]]$Simulation <- i
+  }
+  fulldata <- do.call(rbind,datList)
+  list("data" = fulldata, "res" = res,"plot1" = ggplotly(plot1),"plot2" = ggplotly(plot2))
 }
 
 parallel_sim <- function(nSim,n.per.arm, lbMmse.use=14, ubMmse.use=26,emax1 = 0,emax2 = 0.101,
@@ -258,7 +272,7 @@ parallel_sim <- function(nSim,n.per.arm, lbMmse.use=14, ubMmse.use=26,emax1 = 0,
   resList <- lapply(datList, pAnalyzeParallel, ep.time = duration)
   res <- do.call('rbind',resList)
   mns <- lapply(1:length(datList),function(i){with(datList[[i]], 
-                                                   tapply(AdasCog, list(DrugDose, Time), mean))})
+         tapply(AdasCog, list(DrugDose, Time), mean))})
   mns <- t(do.call('rbind',mns))
   pla <- mns[,colnames(mns) == 'Placebo']
   trt <- mns[,colnames(mns) == 'Treatment']
@@ -272,15 +286,21 @@ parallel_sim <- function(nSim,n.per.arm, lbMmse.use=14, ubMmse.use=26,emax1 = 0,
                  shape = 17, size = 3,color = "dark blue") + 
     theme(panel.background = element_rect(fill = "white"),
           panel.grid.major = element_line(colour = "white"),
-          panel.grid.minor = element_line(colour = "white"),legend.position="none")
+          panel.grid.minor = element_line(colour = "white"),legend.position="none") + 
+    labs(title="Placebo")
   plot2 <- ggplot(strt,aes(x=x, y = values, group = ind)) + 
     geom_line(color='light blue') + geom_point(shape=18,color='light blue') + 
     stat_summary(aes(group=1),geom = "point", fun.y = mean,
                  shape = 17, size = 3,color = "dark blue") + 
     theme(panel.background = element_rect(fill = "white"),
           panel.grid.major = element_line(colour = "white"),
-          panel.grid.minor = element_line(colour = "white"),legend.position="none")
-  list("data" = datList, "res" = res,"plot1" = ggplotly(plot1),"plot2" = ggplotly(plot2))
+          panel.grid.minor = element_line(colour = "white"),legend.position="none")+
+    labs(title="Treatment")
+  for (i in 1:length(datList)){
+    datList[[i]]$Simulation <- i
+  }
+  fulldata <- do.call(rbind,datList)
+  list("data" = fulldata, "res" = res,"plot1" = ggplotly(plot1),"plot2" = ggplotly(plot2))
 }
 
 
@@ -301,8 +321,8 @@ delay_sim <- function(nSim,n.per.arm, lbMmse.use=14, ubMmse.use=26,emax1 = 0,ema
   mns <- lapply(1:length(datList),function(i){with(datList[[i]], 
                       tapply(AdasCog, list(DrugDose, Time), mean))})
   mns <- t(do.call('rbind',mns))
-  pla <- mns[,colnames(mns) == 'Placebo']
-  trt <- mns[,colnames(mns) == 'Treatment']
+  pla <- mns[,colnames(mns) == 'Placebo-Treatment']
+  trt <- mns[,colnames(mns) == 'Treatment-Treatment']
   colnames(pla) <- colnames(trt) <- NULL
   spla <- stack(as.data.frame(pla))
   strt <- stack(as.data.frame(trt))
@@ -313,15 +333,23 @@ delay_sim <- function(nSim,n.per.arm, lbMmse.use=14, ubMmse.use=26,emax1 = 0,ema
                  shape = 17, size = 3,color = "dark blue") + 
     theme(panel.background = element_rect(fill = "white"),
           panel.grid.major = element_line(colour = "white"),
-          panel.grid.minor = element_line(colour = "white"),legend.position="none")
+          panel.grid.minor = element_line(colour = "white"),legend.position="none")+
+    xlab("Time(week)") + ylab("AdasCog Score") + geom_vline(xintercept = start,linetype = "longdash")+
+    labs(title="Placebo-Treatment")
   plot2 <- ggplot(strt,aes(x=x, y = values, group = ind)) + 
     geom_line(color='light blue') + geom_point(shape=18,color='light blue') + 
     stat_summary(aes(group=1),geom = "point", fun.y = mean,
                  shape = 17, size = 3,color = "dark blue") + 
     theme(panel.background = element_rect(fill = "white"),
           panel.grid.major = element_line(colour = "white"),
-          panel.grid.minor = element_line(colour = "white"),legend.position="none")
-  list("data" = datList, "res" = res,"plot1" = ggplotly(plot1),"plot2" = ggplotly(plot2))
+          panel.grid.minor = element_line(colour = "white"),legend.position="none")+
+    xlab("Time(week)") + ylab("AdasCog Score") + geom_vline(xintercept = start,linetype = "longdash")+
+    labs(title="Treatment-Treatment")
+  for (i in 1:length(datList)){
+    datList[[i]]$Simulation <- i
+  }
+  fulldata <- do.call(rbind,datList)
+  list("data" = fulldata, "res" = res,"plot1" = ggplotly(plot1),"plot2" = ggplotly(plot2))
 }
 
 
